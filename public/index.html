@@ -1,22 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Membership Checkout</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stripe Payment Integration</title>
 </head>
 <body>
-  <h1>Become a Member</h1>
-  <button id="pay"> Pay now</button>
+  <h1>Checkout</h1>
+  
+  <!-- Form to collect email and custom amount -->
+  <form id="payment-form">
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" required>
+    </div>
+    <div>
+      <label for="amount">Amount (in USD):</label>
+      <input type="number" id="amount" min="1" required>
+    </div>
+    <button type="submit" id="checkout-button">Pay Now</button>
+  </form>
 
+  <script src="https://js.stripe.com/v3/"></script>
   <script>
-    document.getElementById('pay').addEventListener('click', async () => {
-      const res = await fetch('/create-checkout-session', {
+    var stripe = Stripe('pk_live_F6JNhXyowFCVWpVO3zuaCO6R00f1wEgwtJ');  // Replace with your Stripe publishable key
+
+    // Handle form submission
+    document.getElementById('payment-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const amount = parseFloat(document.getElementById('amount').value) * 100;  // Convert to cents
+
+      fetch('/create-checkout-session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, amount }),
+      })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (sessionId) {
+        return stripe.redirectToCheckout({ sessionId: sessionId.url });
+      })
+      .then(function (result) {
+        if (result.error) {
+          alert(result.error.message);
+        }
+      })
+      .catch(function (error) {
+        console.error('Error:', error);
       });
-      const data = await res.json();
-      window.location.href = data.url;
     });
   </script>
 </body>
