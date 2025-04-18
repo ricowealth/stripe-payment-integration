@@ -1,6 +1,16 @@
 const express = require('express');
 const stripe = require('stripe')('sk_test_yourSecretKey');  // Replace with your Stripe secret key
+const path = require('path');  // For serving static files
+
 const app = express();
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Handle GET request for the root path and send the index.html file
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.use(express.json());
 
