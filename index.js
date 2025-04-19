@@ -48,8 +48,8 @@ app.post('/create-checkout-session', async (req, res) => {
         console.log('Session created:', session);  // Log session data
         res.json({ id: session.id });
     } catch (error) {
-        console.error('Error creating checkout session:', error);
-        res.status(500).send('Internal Server Error');
+    console.error('Stripe error:', error.message);
+    res.status(500).send('Internal Server Error');
     }
 });
 // Start the server
