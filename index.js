@@ -22,7 +22,6 @@ app.post('/create-checkout-session', async (req, res) => {
   const price = 10; // Define your base ticket price here
   const amount = price * ticketCount; // Calculate total amount based on ticket count
 
-  // Create the Checkout session
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -39,7 +38,6 @@ app.post('/create-checkout-session', async (req, res) => {
         },
       ],
       mode: 'payment',
-      allow_promotion_codes: true,
       success_url: 'https://pomegranate-guppy-ze9d.squarespace.com/thank-you-1?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://pomegranate-guppy-ze9d.squarespace.com/cancel',
     });
