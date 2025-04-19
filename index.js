@@ -1,25 +1,23 @@
 const express = require('express');
-const stripe = require('stripe')('sk_test_51EaLvdJoMsGzwYlkBMqrw7Jatw7EQTIJX7Msd6uKDGktY4HX9m9dnhgcBXxsO4knv8gaO6U1lcfB4GNiFgCGTAqq00ITsBm13E');  // Replace with your Stripe secret key
-const path = require('path');  // For serving static files
+const Stripe = require('stripe');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Handle GET request for the root path and send the index.html file
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
+app.use(cors());
 app.use(express.json());
 
-// Endpoint to create Stripe checkout session
-app.post('/create-checkout-session', async (req, res) => {
-  const { email, amount } = req.body;
+app.get('/create-checkout', async (req, res) => {
+  const price = parseInt(req.query.price); // in dollars
+  const amountInCents = price * 100;
+
+  if (!price || price < 1) {
+    return res.status(400).json({ error: 'Invalid price' });
+  }
 
   try {
-    // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
@@ -27,26 +25,29 @@ app.post('/create-checkout-session', async (req, res) => {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: 'Custom Membership Access',
+            name: `Membership Ticket - Minimum $${price}`,
           },
-          unit_amount: amount,  // amount in cents
+          unit_amount: amountInCents,
         },
-        quantity: 1,
+        adjustable_quantity: {
+          enabled: true,
+          minimum: 1,
+        },
       }],
-      customer_email: email, // Attach the customer email to the session
-      success_url: 'https://pomegranate-guppy-ze9d.squarespace.com/thank-you-1',
-      cancel_url: 'https://pomegranate-guppy-ze9d.squarespace.com/payment/cancel',
+      success_url: 'https://pomegranate-guppy-ze9d.squarespace.com/thank-you-1?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: 'https://pomegranate-guppy-ze9d.squarespace.com/cancel',
     });
 
-    // Send the session ID back to the frontend
-    res.json({ id: session.id });
+    res.redirect(303, session.url);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Could not create Stripe Checkout session' });
   }
 });
 
-// Start server
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.get('/', (req, res) => {
+  res.send('Stripe backend is running.');
 });
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
