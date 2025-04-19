@@ -14,6 +14,7 @@ app.get('/', (req, res) => {
 
 app.use(express.json());
 
+// Endpoint to create Stripe checkout session
 app.post('/create-checkout-session', async (req, res) => {
   const { email, amount } = req.body;
 
