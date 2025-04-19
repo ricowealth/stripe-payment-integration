@@ -42,12 +42,11 @@
       .then(function (response) {
         return response.json();
       })
-      .then(function (session) {  // session is an object, containing the sessionId
-        return stripe.redirectToCheckout({ sessionId: session.id });  // Use session.id here, not session.url
-      })
-      .then(function (result) {
-        if (result.error) {
-          alert(result.error.message);
+      .then(function (data) {
+        if (data.id) {
+          stripe.redirectToCheckout({ sessionId: data.id });
+        } else {
+          alert('Failed to create checkout session.');
         }
       })
       .catch(function (error) {
