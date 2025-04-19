@@ -9,8 +9,11 @@ require('dotenv').config();
 const app = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-app.use(cors()); // 👉 And this line here
-app.use(bodyParser.json());
+app.use(cors({
+  origin: 'https://pomegranate-guppy-ze9d.squarespace.com',
+  methods: ['POST'],
+  allowedHeaders: ['Content-Type']
+}));
 
 // Serve the index.html page when accessing the root URL (/)
 app.get('/', (req, res) => {
