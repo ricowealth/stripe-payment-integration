@@ -1,23 +1,21 @@
 const express = require('express');
 const Stripe = require('stripe');
 const bodyParser = require('body-parser');
-require('dotenv').config();  // Load environment variables from .env
+
+// Load environment variables from .env
+require('dotenv').config();
 
 const app = express();
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Use your Stripe secret key from .env
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Use your Stripe secret key from the .env file
 
-// Middleware to parse JSON requests
 app.use(bodyParser.json());
 
-// Serve static files from the 'public' folder
-app.use(express.static('public'));
-
-// Route for creating checkout session
+// Existing route for creating checkout session
 app.post('/create-checkout-session', async (req, res) => {
   const { ticketCount } = req.body;
 
-  const price = 10; // Define your base ticket price here
-  const amount = price * ticketCount; // Calculate total amount based on ticket count
+  const pricePerTicket = 33; // Define your ticket price here (per ticket is $33)
+  const amount = pricePerTicket * ticketCount; // Calculate total amount based on ticket count
 
   // Create the Checkout session
   try {
@@ -39,6 +37,15 @@ app.post('/create-checkout-session', async (req, res) => {
       allow_promotion_codes: true,
       success_url: 'https://pomegranate-guppy-ze9d.squarespace.com/thank-you-1?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://pomegranate-guppy-ze9d.squarespace.com/cancel',
+      // Here, we add Stripe's "pay what you want" feature:
+      payment_intent_data: {
+        setup_future_usage: 'off_session',
+        amount: amount * 100, // Set the base amount
+        // Let the user add more money on the checkout page:
+        metadata: {
+          'ticket_count': ticketCount,
+        }
+      }
     });
 
     res.json({ id: session.id });
@@ -48,7 +55,7 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 });
 
-// Route to retrieve session details
+// New route to retrieve session details
 app.get('/session/:sessionId', async (req, res) => {
   const { sessionId } = req.params;
   try {
