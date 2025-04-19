@@ -2,25 +2,139 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Stripe Checkout Integration</title>
-    <script src="https://js.stripe.com/v3/"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .ticket-selection {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .ticket-selection label {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .ticket-selection input {
+            width: 60px;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .ticket-selection input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .total-price {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .checkout-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            font-size: 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .checkout-button:hover {
+            background-color: #45a049;
+        }
+
+        .checkout-button:active {
+            background-color: #388e3c;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Stripe Checkout Integration</h1>
-    <div>
-        <label for="ticketCount">Select number of tickets:</label>
-        <input type="number" id="ticketCount" value="1" min="1" max="10">
-    </div>
-    <button id="checkoutButton">Checkout</button>
+    <div class="container">
+        <h1>Complete Your Purchase</h1>
+        
+        <div class="ticket-selection">
+            <label for="ticketCount">Tickets</label>
+            <input type="number" id="ticketCount" value="1" min="1" max="10">
+        </div>
 
+        <div class="total-price">
+            Total: <span id="totalPrice">$33</span> USD
+        </div>
+
+        <button id="checkoutButton" class="checkout-button">Proceed to Checkout</button>
+
+        <div class="footer">
+            <p>Secure checkout powered by <a href="https://stripe.com" target="_blank">Stripe</a>.</p>
+        </div>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
         const stripe = Stripe('pk_test_51EaLvdJoMsGzwYlkBPzQkxnDHzj80GKYcHpqtn98UnF0DksfzIRmbFwqv9k00wAhZohgdaPbEkg5zmHzFQrfpuNO00ZZ2t7uV1'); // Use your Stripe public key here
-        
-        // Get the checkout button and ticket count
+
         const checkoutButton = document.getElementById('checkoutButton');
         const ticketCountInput = document.getElementById('ticketCount');
+        const totalPriceDisplay = document.getElementById('totalPrice');
+        const pricePerTicket = 33; // Each ticket costs $33
 
-        // When the checkout button is clicked
+        // Update total price dynamically based on ticket count
+        ticketCountInput.addEventListener('input', () => {
+            const ticketCount = parseInt(ticketCountInput.value);
+            const totalAmount = ticketCount * pricePerTicket;
+            totalPriceDisplay.textContent = `$${totalAmount}`;
+        });
+
         checkoutButton.addEventListener('click', async () => {
             const ticketCount = parseInt(ticketCountInput.value);
             const response = await fetch('/create-checkout-session', {
