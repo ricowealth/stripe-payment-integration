@@ -1,25 +1,17 @@
 {
-  "name": "stripe-squarespace-backend",
+  "name": "stripe-checkout-integration",
   "version": "1.0.0",
   "main": "index.js",
+  "description": "Stripe + Squarespace integration backend",
   "scripts": {
     "start": "node index.js"
   },
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "stripe": "^12.0.0"
   }
-  "name": "stripe-checkout-integration",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
-
 }
