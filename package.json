@@ -1,11 +1,12 @@
 {
   "name": "stripe-checkout-integration",
   "version": "1.0.0",
-  "main": "index.js",
   "description": "Stripe + Squarespace integration backend",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
