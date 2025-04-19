@@ -10,6 +10,11 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Use your Stripe secret 
 
 app.use(bodyParser.json());
 
+// Route to handle root path
+app.get('/', (req, res) => {
+  res.send('Welcome to the Stripe Checkout Integration');
+});
+
 // Existing route for creating checkout session
 app.post('/create-checkout-session', async (req, res) => {
   const { ticketCount } = req.body;
