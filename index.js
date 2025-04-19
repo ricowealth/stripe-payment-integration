@@ -1,27 +1,25 @@
 const express = require('express');
 const Stripe = require('stripe');
 const bodyParser = require('body-parser');
-
-// Load environment variables from .env
-require('dotenv').config();
+require('dotenv').config();  // Load environment variables from .env
 
 const app = express();
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Use your Stripe secret key from the .env file
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Use your Stripe secret key from .env
 
+// Middleware to parse JSON requests
 app.use(bodyParser.json());
 
-// Route to handle root path
-app.get('/', (req, res) => {
-  res.send('Welcome to the Stripe Checkout Integration');
-});
+// Serve static files from the 'public' folder
+app.use(express.static('public'));
 
-// Existing route for creating checkout session
+// Route for creating checkout session
 app.post('/create-checkout-session', async (req, res) => {
   const { ticketCount } = req.body;
 
   const price = 10; // Define your base ticket price here
   const amount = price * ticketCount; // Calculate total amount based on ticket count
 
+  // Create the Checkout session
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -38,6 +36,7 @@ app.post('/create-checkout-session', async (req, res) => {
         },
       ],
       mode: 'payment',
+      allow_promotion_codes: true,
       success_url: 'https://pomegranate-guppy-ze9d.squarespace.com/thank-you-1?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://pomegranate-guppy-ze9d.squarespace.com/cancel',
     });
@@ -49,7 +48,7 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 });
 
-// New route to retrieve session details
+// Route to retrieve session details
 app.get('/session/:sessionId', async (req, res) => {
   const { sessionId } = req.params;
   try {
