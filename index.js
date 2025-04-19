@@ -1,14 +1,15 @@
 const express = require('express');
 const Stripe = require('stripe');
 const bodyParser = require('body-parser');
-const path = require('path');  // Import path module for serving static files
+const path = require('path');
+const cors = require('cors'); // 👉 Add this line
 
-// Load environment variables from .env
 require('dotenv').config();
 
 const app = express();
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Use your Stripe secret key from the .env file
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
+app.use(cors()); // 👉 And this line here
 app.use(bodyParser.json());
 
 // Serve the index.html page when accessing the root URL (/)
