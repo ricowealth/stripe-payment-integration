@@ -19,11 +19,11 @@ app.get('/', (req, res) => {
 // Existing route for creating checkout session
 app.post('/create-checkout-session', async (req, res) => {
     const { ticketCount } = req.body;
+    console.log('Ticket Count:', ticketCount);  // Log the ticket count
 
-    const price = 33; // Define your base ticket price here
-    const amount = price * ticketCount; // Calculate total amount based on ticket count
+    const price = 33;
+    const amount = price * ticketCount;
 
-    // Create the Checkout session
     try {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -44,14 +44,13 @@ app.post('/create-checkout-session', async (req, res) => {
             success_url: 'https://pomegranate-guppy-ze9d.squarespace.com/thank-you-1?session_id={CHECKOUT_SESSION_ID}',
             cancel_url: 'https://pomegranate-guppy-ze9d.squarespace.com/cancel',
         });
-
+        console.log('Session created:', session);  // Log session data
         res.json({ id: session.id });
     } catch (error) {
         console.error('Error creating checkout session:', error);
         res.status(500).send('Internal Server Error');
     }
 });
-
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
