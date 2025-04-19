@@ -1,27 +1,26 @@
 {
-<<<<<<< HEAD
-  "name": "stripe-squarespace-backend",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "stripe": "^12.0.0"
-  }
-=======
   "name": "stripe-checkout-integration",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ricowealth/stripe-payment-integration.git"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
->>>>>>> 6678536 (Your commit message)
+  "bugs": {
+    "url": "https://github.com/ricowealth/stripe-payment-integration/issues"
+  },
+  "homepage": "https://github.com/ricowealth/stripe-payment-integration#readme",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "stripe": "^18.0.0"
+  }
 }
