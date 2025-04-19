@@ -1,58 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stripe Payment Integration</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Checkout Integration</title>
 </head>
 <body>
-  <h1>Checkout</h1>
-  
-  <!-- Form to collect email and custom amount -->
-  <form id="payment-form">
-    <div>
-      <label for="email">Email:</label>
-      <input type="email" id="email" required>
-    </div>
-    <div>
-      <label for="amount">Amount (in USD):</label>
-      <input type="number" id="amount" min="1" required>
-    </div>
-    <button type="submit" id="checkout-button">Pay Now</button>
-  </form>
+    <h1>Welcome to the Stripe Checkout Integration</h1>
 
-  <script src="https://js.stripe.com/v3/"></script>
-  <script>
-    var stripe = Stripe('pk_test_VMyqWPUDduIsQGHwfOURv6hi00JoY4ctJl');  // Replace with your Stripe publishable key
+    <button id="checkout-button">Checkout</button>
 
-    // Handle form submission
-    document.getElementById('payment-form').addEventListener('submit', function (e) {
-      e.preventDefault();
-      
-      const email = document.getElementById('email').value;
-      const amount = parseFloat(document.getElementById('amount').value) * 100;  // Convert to cents
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // Your publishable key from Stripe
+        const stripe = Stripe('pk_test_VMyqWPUDduIsQGHwfOURv6hi00JoY4ctJl');
 
-     fetch("/create-checkout-session", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ email, amount }),
-})
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (data) {
-        if (data.id) {
-          stripe.redirectToCheckout({ sessionId: data.id });
-        } else {
-          alert('Failed to create checkout session.');
-        }
-      })
-      .catch(function (error) {
-        console.error('Error:', error);
-      });
-    });
-  </script>
+        const checkoutButton = document.getElementById('checkout-button');
+
+        checkoutButton.addEventListener('click', () => {
+            fetch('/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ticketCount: 2 })
+            })
+            .then((response) => response.json())
+            .then((session) => {
+                return stripe.redirectToCheckout({ sessionId: session.id });
+            })
+            .then((result) => {
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
 </body>
 </html>
