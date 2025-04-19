@@ -1,53 +1,62 @@
 const express = require('express');
 const Stripe = require('stripe');
-const cors = require('cors');
-require('dotenv').config();
+const bodyParser = require('body-parser');
 
 const app = express();
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = Stripe('sk_test_51EaLvdJoMsGzwYlkBMqrw7Jatw7EQTIJX7Msd6uKDGktY4HX9m9dnhgcBXxsO4knv8gaO6U1lcfB4GNiFgCGTAqq00ITsBm13E'); // Use your Stripe secret key here
 
-app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
-app.get('/create-checkout', async (req, res) => {
-  const price = parseInt(req.query.price); // in dollars
-  const amountInCents = price * 100;
+// Existing route for creating checkout session
+app.post('/create-checkout-session', async (req, res) => {
+  const { ticketCount } = req.body;
 
-  if (!price || price < 1) {
-    return res.status(400).json({ error: 'Invalid price' });
-  }
+  const price = 10; // Define your base ticket price here
+  const amount = price * ticketCount; // Calculate total amount based on ticket count
 
+  // Create the Checkout session
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      mode: 'payment',
-      line_items: [{
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: `Membership Ticket - Minimum $${price}`,
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `${ticketCount} Ticket${ticketCount > 1 ? 's' : ''}`,
+            },
+            unit_amount: amount * 100, // Convert to cents
           },
-          unit_amount: amountInCents,
+          quantity: 1,
         },
-        adjustable_quantity: {
-          enabled: true,
-          minimum: 1,
-        },
-      }],
+      ],
+      mode: 'payment',
+      allow_promotion_codes: true,
       success_url: 'https://pomegranate-guppy-ze9d.squarespace.com/thank-you-1?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://pomegranate-guppy-ze9d.squarespace.com/cancel',
     });
 
-    res.redirect(303, session.url);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Could not create Stripe Checkout session' });
+    res.json({ id: session.id });
+  } catch (error) {
+    console.error('Error creating checkout session:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 
-app.get('/', (req, res) => {
-  res.send('Stripe backend is running.');
+// New route to retrieve session details
+app.get('/session/:sessionId', async (req, res) => {
+  const { sessionId } = req.params;
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    res.json(session);
+  } catch (error) {
+    console.error('Error retrieving session:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Start the server
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
