@@ -1,5 +1,5 @@
 const express = require('express');
-const stripe = require('stripe')('sk_test_yourSecretKey');  // Replace with your Stripe secret key
+const stripe = require('stripe')('sk_test_51EaLvdJoMsGzwYlkBMqrw7Jatw7EQTIJX7Msd6uKDGktY4HX9m9dnhgcBXxsO4knv8gaO6U1lcfB4GNiFgCGTAqq00ITsBm13E');  // Replace with your Stripe secret key
 const path = require('path');  // For serving static files
 
 const app = express();
