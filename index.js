@@ -14,8 +14,8 @@ app.use(bodyParser.json());
 app.post('/create-checkout-session', async (req, res) => {
   const { ticketCount } = req.body;
 
-  const price = 10; // Define your base ticket price here
-  const amount = price * ticketCount; // Calculate total amount based on ticket count
+  const pricePerTicket = 33; // Define your ticket price here (per ticket is $33)
+  const amount = pricePerTicket * ticketCount; // Calculate total amount based on ticket count
 
   // Create the Checkout session
   try {
@@ -37,6 +37,15 @@ app.post('/create-checkout-session', async (req, res) => {
       allow_promotion_codes: true,
       success_url: 'https://pomegranate-guppy-ze9d.squarespace.com/thank-you-1?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://pomegranate-guppy-ze9d.squarespace.com/cancel',
+      // Here, we add Stripe's "pay what you want" feature:
+      payment_intent_data: {
+        setup_future_usage: 'off_session',
+        amount: amount * 100, // Set the base amount
+        // Let the user add more money on the checkout page:
+        metadata: {
+          'ticket_count': ticketCount,
+        }
+      }
     });
 
     res.json({ id: session.id });
