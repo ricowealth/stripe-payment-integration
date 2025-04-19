@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-<<<<<<< HEAD
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,7 +24,6 @@
   },
   "devDependencies": {},
   "description": ""
-=======
     "start": "node index.js"
   },
   "dependencies": {
@@ -34,5 +32,4 @@
     "express": "^4.18.2",
     "stripe": "^12.0.0"
   }
->>>>>>> c72deb6bc69a56fe852dcc43923fe6c096a15815
 }
