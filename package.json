@@ -23,6 +23,5 @@
     "express": "^5.1.0",
     "stripe": "^18.0.0"
   },
-  "devDependencies": {},
   "description": ""
 }
