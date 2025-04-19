@@ -7,6 +7,7 @@ const stripe = Stripe('sk_test_51EaLvdJoMsGzwYlkBMqrw7Jatw7EQTIJX7Msd6uKDGktY4HX
 
 app.use(bodyParser.json());
 
+// Existing route for creating checkout session
 app.post('/create-checkout-session', async (req, res) => {
   const { ticketCount } = req.body;
 
@@ -38,6 +39,18 @@ app.post('/create-checkout-session', async (req, res) => {
     res.json({ id: session.id });
   } catch (error) {
     console.error('Error creating checkout session:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// New route to retrieve session details
+app.get('/session/:sessionId', async (req, res) => {
+  const { sessionId } = req.params;
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    res.json(session);
+  } catch (error) {
+    console.error('Error retrieving session:', error);
     res.status(500).send('Internal Server Error');
   }
 });
