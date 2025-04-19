@@ -16,11 +16,12 @@
     "url": "https://github.com/ricowealth/stripe-payment-integration/issues"
   },
   "homepage": "https://github.com/ricowealth/stripe-payment-integration#readme",
-  "description": "",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "stripe": "^18.0.0"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }
