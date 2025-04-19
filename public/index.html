@@ -32,13 +32,13 @@
       const email = document.getElementById('email').value;
       const amount = parseFloat(document.getElementById('amount').value) * 100;  // Convert to cents
 
-      fetch('/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, amount }),
-      })
+     fetch("/create-checkout-session", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ email, amount }),
+})
       .then(function (response) {
         return response.json();
       })
